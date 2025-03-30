@@ -48,20 +48,24 @@ export const CalendarView = () => {
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    setActiveEvent(null); // Clear overlay item
+    setActiveEvent(null);
     const { active, over } = event;
 
     if (!over) {
       console.log("Drag cancelled or dropped outside a droppable area");
-      return; // Dropped outside any droppable area
+      return;
     }
 
     const activeId = active.id as string;
     const targetDate = over.id as string; // DayColumn's ID is the date string
+    console.log(`Active ID: ${activeId}`);
+    console.log(`Dropped on ${targetDate}`);
 
     // Get source date from the data passed during drag start
     const sourceDate = active.data.current?.sourceDate as string;
     const draggedEvent = active.data.current?.event as Event;
+    console.log(`Source Date: ${sourceDate}`);
+    console.log(`Dragged Event: ${JSON.stringify(draggedEvent)}`);
 
     if (!draggedEvent || !sourceDate) {
       console.error("Missing event data on drag end");
@@ -76,7 +80,6 @@ export const CalendarView = () => {
       setEvents((prevEvents) => {
         const newEvents = { ...prevEvents };
 
-        // Remove from source date
         if (newEvents[sourceDate]) {
           newEvents[sourceDate] = newEvents[sourceDate].filter(
             (ev) => ev.id !== activeId
@@ -113,7 +116,7 @@ export const CalendarView = () => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex-grow flex flex-col overflow-hidden">
+      <div className="flex-grow flex flex-col overflow-y-scroll">
         {viewMode === "mobile" ? <MobileView /> : <DesktopView />}
       </div>
 

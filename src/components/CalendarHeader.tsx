@@ -1,4 +1,3 @@
-// src/components/CalendarHeader.tsx
 "use client";
 
 import React from "react";
@@ -7,6 +6,7 @@ import { format, addDays, subDays, addWeeks, subWeeks } from "date-fns";
 import { getWeekDisplay } from "../lib/dataUtils";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid"; // Install @heroicons/react
+import Image from "next/image";
 
 export const CalendarHeader = () => {
   const { currentDate, setCurrentDate, viewMode } = useCalendar();
@@ -35,7 +35,10 @@ export const CalendarHeader = () => {
   return (
     <div className="flex items-center justify-between p-4 bg-header-gradient text-white shadow-md">
       <div className="flex items-center space-x-4">
-        <h1 className="text-xl font-semibold">Calendar</h1>
+        <h1 className="text-xl font-semibold flex items-center space-x-2">
+          <Image src="/logo.png" alt="logo" width={30} height={100} />
+          <span className="text-[#6b4ce5]">Kanban</span>
+        </h1>
         <button
           onClick={handleToday}
           className="px-3 py-1 border border-white rounded text-sm hover:bg-white/20 transition-colors"

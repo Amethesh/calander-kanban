@@ -12,7 +12,6 @@ import {
   isSameDay,
   formatISO,
 } from "date-fns";
-import { EventsByDate } from "kanban/types";
 
 const DATE_FORMAT = "yyyy-MM-dd";
 const WEEK_STARTS_ON = 1; // Monday
@@ -54,7 +53,6 @@ export const getWeekDisplay = (date: Date): string => {
     )}, ${format(start, "yyyy")}`;
   }
 };
-
 
 export {
   format,
