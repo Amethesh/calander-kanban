@@ -8,7 +8,7 @@ import { addDays, subDays, formatISO, isSameDay } from "date-fns";
 import { formatDateKey } from "../lib/dataUtils";
 import { motion, PanInfo, useAnimation } from "framer-motion";
 
-const SWIPE_THRESHOLD = 50; // Minimum pixels to trigger navigation
+const SWIPE_THRESHOLD = 50;
 
 export const MobileView = () => {
   const { events, currentDate, setCurrentDate } = useCalendar();
@@ -16,9 +16,8 @@ export const MobileView = () => {
   const dragContainerRef = useRef<HTMLDivElement>(null);
   const today = new Date();
 
-  // Dates to render: previous, current, next
   const datesToRender = [
-    subDays(currentDate, 1),
+    // subDays(currentDate, 1),
     currentDate,
     addDays(currentDate, 1),
   ];
@@ -46,22 +45,20 @@ export const MobileView = () => {
       });
     }
   };
-
   return (
     <div ref={dragContainerRef} className="flex-grow overflow-hidden relative">
-      {/* This motion div holds the sliding days */}
       <motion.div
-        key={formatISO(currentDate)} // Change key to force re-render/reset of position logic on date change
-        className="flex absolute inset-0 w-[300%]" // 3 times the width for prev, current, next
-        style={{ x: "-100%" }} // Start showing the middle (current) day
-        drag="x"
-        dragConstraints={dragContainerRef} // Constrain dragging within the container
-        dragElastic={0.1} // A little bounce at the edges
+        key={formatISO(currentDate)}
+        className="flex absolute inset-0 "
+        // drag="x"
+        dragConstraints={dragContainerRef}
+        dragElastic={0.1}
         onDragEnd={handleDragEnd}
-        animate={controls} // Control position with animation hook
+        animate={controls}
       >
         {datesToRender.map((date) => {
           const dateKey = formatDateKey(date);
+          console.log("Rendering date:", dateKey);
           return (
             <div key={dateKey} className="w-full h-full flex-shrink-0">
               <DayColumn

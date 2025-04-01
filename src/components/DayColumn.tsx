@@ -47,9 +47,11 @@ export const DayColumn = ({ date, events, isCurrent }: DayColumnProps) => {
           /{format(dateObj, "EEE")}
         </span>
       </div>
-      <div className="space-y-2  px-1">
-        {" "}
-        {/* Adjust height based on header */}
+      <div
+        className={`relative space-y-2 px-1 h-full  ${
+          isOver ? "border-2 border-dashed border-amber-800 rounded-4xl" : ""
+        }`}
+      >
         {sortedEvents.length > 0 ? (
           sortedEvents.map((event) => (
             <EventCard key={event.id} event={event} date={date} />

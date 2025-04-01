@@ -104,7 +104,7 @@ export const EventCard = ({ event, date }: EventCardProps) => {
       ref={setNodeRef}
       style={style}
       layoutId={`card-${event.id}`}
-      className={`rounded-xl shadow-lg p-0 mb-4 touch-none overflow-hidden flex flex-col ${textColorClass}`}
+      className={`rounded-xl shadow-lg p-0 mb-4 overflow-hidden flex flex-col touch-action ${textColorClass}`}
       {...listeners}
       {...attributes}
       onClick={handleCardClick}
