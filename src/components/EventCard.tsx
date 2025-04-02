@@ -74,7 +74,7 @@ export const EventCard = ({ event, date }: EventCardProps) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: event.id,
-      data: { event, sourceDate: date }, // Pass event data and source date
+      data: { event, sourceDate: date },
     });
 
   const colorIndex = getIndexFromString(event.id, listOfColours.length);

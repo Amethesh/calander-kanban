@@ -22,7 +22,6 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-background-gradient min-h-screen`}
       >
-        {/* Wrap entire application potentially needing calendar state */}
         <CalendarProvider>{children}</CalendarProvider>
       </body>
     </html>

@@ -1,7 +1,5 @@
-// src/data/events.ts
 import { EventsByDate } from "../types/index";
 
-// Using the provided mock data
 const events: EventsByDate = {
   "2025-03-11": [
     {
@@ -54,8 +52,7 @@ const events: EventsByDate = {
       time: "11:30 AM",
     },
   ],
-  // Add a few more dates for testing infinite scroll/week view
-  "2025-03-14": [], // Empty day
+  "2025-03-14": [],
   "2025-03-15": [
     {
       id: "event-6",
@@ -66,7 +63,6 @@ const events: EventsByDate = {
     },
   ],
   "2025-03-18": [
-    // Next week start
     {
       id: "event-7",
       title: "Marketing Sync",

@@ -25,10 +25,9 @@ const EDGE_THRESHOLD = 200;
 const EDGE_HOVER_DELAY = 900;
 
 export const CalendarView = () => {
-  const { viewMode, setCurrentDate, setEvents } = useCalendar(); // Assuming currentDate is available for logging
+  const { viewMode, setCurrentDate, setEvents } = useCalendar();
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const edgeHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  // Use state for the edge ref to ensure re-renders acknowledge it if needed, though ref is often fine
   const isNearEdgeRef = useRef<"left" | "right" | null>(null);
   const activeDragDataRef = useRef<{
     event: Event | null;
@@ -48,11 +47,9 @@ export const CalendarView = () => {
       edgeHoverTimeoutRef.current = null;
       console.log("Cleared edge hover timeout");
     }
-    // Only reset the ref when explicitly clearing (moved away or drag end/cancel)
     isNearEdgeRef.current = null;
   }, []);
 
-  // Clear timeout on unmount or view change as a safeguard
   useEffect(() => {
     return () => {
       clearEdgeHoverTimeout();
@@ -69,7 +66,7 @@ export const CalendarView = () => {
       activeDragDataRef.current = {
         event: eventData,
         sourceDate: sourceDate,
-      }; // Store data for move handler
+      };
     } else {
       console.error("Drag Start: Missing event data");
       activeDragDataRef.current = { event: null, sourceDate: null };
@@ -82,7 +79,6 @@ export const CalendarView = () => {
 
       const { active, delta } = event;
       const pointerX = (active.rect.current.initial?.left ?? 0) + delta.x;
-
       let currentlyNear: "left" | "right" | null = null;
 
       if (pointerX < EDGE_THRESHOLD) {
@@ -91,27 +87,14 @@ export const CalendarView = () => {
         currentlyNear = "right";
       }
 
-      // Debug log
-      console.log(
-        `Drag Move: pointerX=<span class="math-inline">\{pointerX\.toFixed\(0\)\}, currentlyNear\=</span>{currentlyNear}, isNearEdgeRef=<span class="math-inline">\{isNearEdgeRef\.current\}, timeoutRunning\=</span>{!!edgeHoverTimeoutRef.current}`
-      );
-
-      // --- Revised Logic ---
       if (currentlyNear) {
-        // Pointer is near an edge
         if (currentlyNear !== isNearEdgeRef.current) {
-          // Entered a *new* edge zone (or first time entering)
           console.log(
             `Entered edge zone: ${currentlyNear}. Clearing previous timeout if any.`
           );
-          clearEdgeHoverTimeout(); // Clear any previous timer & reset ref
-          isNearEdgeRef.current = currentlyNear; // Set the new edge
-          // Start a new timer
-          console.log(
-            `Starting ${EDGE_HOVER_DELAY}ms timeout for ${currentlyNear} scroll.`
-          );
+          clearEdgeHoverTimeout();
+          isNearEdgeRef.current = currentlyNear;
           edgeHoverTimeoutRef.current = setTimeout(() => {
-            // Check *again* when timeout fires if we are *still* near the *same* edge
             if (isNearEdgeRef.current === currentlyNear) {
               console.log(`Edge Timeout Fired: Scrolling ${currentlyNear}`);
               if (currentlyNear === "left") {
@@ -119,22 +102,14 @@ export const CalendarView = () => {
               } else {
                 setCurrentDate((prev) => addDays(prev, 1));
               }
-              // Reset the timeout ID, but NOT isNearEdgeRef here.
-              // Allow the next move event to potentially restart the timer if still near edge.
               edgeHoverTimeoutRef.current = null;
             } else {
-              console.log(
-                "Edge Timeout Fired: No longer near the original edge. No scroll."
-              );
-              edgeHoverTimeoutRef.current = null; // Still clear the timeout ID
+              edgeHoverTimeoutRef.current = null;
             }
           }, EDGE_HOVER_DELAY);
         } else {
-          // Still near the *same* edge as before.
-          // Do nothing if a timer is already running. If not, start one (e.g., if it just fired)
           if (!edgeHoverTimeoutRef.current) {
             console.log(`Still near ${currentlyNear}, starting new timeout.`);
-            // Start a new timer (same logic as above)
             edgeHoverTimeoutRef.current = setTimeout(() => {
               if (isNearEdgeRef.current === currentlyNear) {
                 console.log(
@@ -156,34 +131,25 @@ export const CalendarView = () => {
           }
         }
       } else {
-        // Pointer is NOT near any edge
         if (isNearEdgeRef.current) {
-          // We *were* near an edge, but now moved away
           console.log("Moved away from edge. Clearing timeout.");
-          clearEdgeHoverTimeout(); // Clear timer and reset ref state
+          clearEdgeHoverTimeout();
         }
-        // If we were not near an edge and still aren't, do nothing.
       }
     },
-    [
-      viewMode,
-      setCurrentDate,
-      clearEdgeHoverTimeout /* Add other dependencies if needed, like EDGE_THRESHOLD/DELAY if they change */,
-    ]
+    [viewMode, setCurrentDate, clearEdgeHoverTimeout]
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
     console.log("Drag End event:", event);
     const { active, over } = event;
-
-    // Clear any pending edge scroll immediately
     clearEdgeHoverTimeout();
 
-    const draggedEvent = activeDragDataRef.current.event; // Use ref data
-    const sourceDate = activeDragDataRef.current.sourceDate; // Use ref data
+    const draggedEvent = activeDragDataRef.current.event;
+    const sourceDate = activeDragDataRef.current.sourceDate;
 
-    setActiveEvent(null); // Clear overlay item
-    activeDragDataRef.current = { event: null, sourceDate: null }; // Clear ref data
+    setActiveEvent(null);
+    activeDragDataRef.current = { event: null, sourceDate: null };
 
     if (!over) {
       console.log(
@@ -192,18 +158,15 @@ export const CalendarView = () => {
         "Source:",
         sourceDate
       );
-      // Optional: Add logic to revert if needed, though dnd-kit usually handles visuals
       return;
     }
 
-    const activeId = active.id as string; // Should match draggedEvent.id
-    const targetDate = over.id as string; // ID from the useDroppable target
+    const activeId = active.id as string;
+    const targetDate = over.id as string;
 
     console.log(
       `Drag End: Event ${activeId} (from ${sourceDate}) dropped on ${targetDate}`
     );
-
-    // Validate data needed for state update
     if (!draggedEvent || !sourceDate || activeId !== draggedEvent.id) {
       console.error(
         "Missing or inconsistent event data on drag end. Aborting state update.",
@@ -212,7 +175,6 @@ export const CalendarView = () => {
       return;
     }
 
-    // Only update state if the date actually changed
     if (sourceDate !== targetDate) {
       console.log(
         `Moving event ${activeId} from ${sourceDate} to ${targetDate}`
@@ -220,8 +182,6 @@ export const CalendarView = () => {
 
       setEvents((prevEvents) => {
         const newEvents = { ...prevEvents };
-
-        // Remove from source
         if (newEvents[sourceDate]) {
           const originalLength = newEvents[sourceDate].length;
           newEvents[sourceDate] = newEvents[sourceDate].filter(
@@ -236,21 +196,17 @@ export const CalendarView = () => {
           );
         }
 
-        // Add to target
         if (!newEvents[targetDate]) {
           console.log(`Target date ${targetDate} array initialized.`);
           newEvents[targetDate] = [];
         }
-
-        // Check if it somehow already exists (shouldn't happen with unique IDs and correct logic)
         if (newEvents[targetDate].some((ev) => ev.id === activeId)) {
           console.warn(
             `Event ${activeId} already exists in target ${targetDate}. Skipping add.`
           );
         } else {
           console.log(`Adding event ${activeId} to ${targetDate}.`);
-          newEvents[targetDate].push(draggedEvent); // Add the original event object
-          // Sort the target array by time
+          newEvents[targetDate].push(draggedEvent);
           newEvents[targetDate].sort(
             (a, b) => parseTime(a.time) - parseTime(b.time)
           );
@@ -267,9 +223,9 @@ export const CalendarView = () => {
 
   const handleDragCancel = (event: DragCancelEvent) => {
     console.log("Drag Cancelled:", event.active.id);
-    clearEdgeHoverTimeout(); // Clear timeout on cancel
-    setActiveEvent(null); // Clear overlay item
-    activeDragDataRef.current = { event: null, sourceDate: null }; // Clear ref data
+    clearEdgeHoverTimeout();
+    setActiveEvent(null);
+    activeDragDataRef.current = { event: null, sourceDate: null };
   };
 
   return (

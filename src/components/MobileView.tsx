@@ -1,4 +1,3 @@
-// src/components/MobileView.tsx
 "use client";
 
 import React, { useRef } from "react";
@@ -30,15 +29,12 @@ export const MobileView = () => {
     const velocity = info.velocity.x;
 
     if (offset < -SWIPE_THRESHOLD || velocity < -500) {
-      // Swiped left (show next day)
       setCurrentDate((prev) => addDays(prev, 1));
-      controls.start({ x: 0, transition: { duration: 0 } }); // Reset instantly after nav
+      controls.start({ x: 0, transition: { duration: 0 } });
     } else if (offset > SWIPE_THRESHOLD || velocity > 500) {
-      // Swiped right (show previous day)
       setCurrentDate((prev) => subDays(prev, 1));
-      controls.start({ x: 0, transition: { duration: 0 } }); // Reset instantly after nav
+      controls.start({ x: 0, transition: { duration: 0 } });
     } else {
-      // Didn't swipe far enough, animate back to center
       controls.start({
         x: 0,
         transition: { type: "spring", stiffness: 300, damping: 30 },

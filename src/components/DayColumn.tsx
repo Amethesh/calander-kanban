@@ -1,4 +1,3 @@
-// src/components/DayColumn.tsx
 "use client";
 
 import React from "react";
@@ -9,9 +8,9 @@ import { format } from "date-fns";
 import { parseTime } from "kanban/lib/dataUtils";
 
 interface DayColumnProps {
-  date: string; // 'yyyy-MM-dd'
+  date: string;
   events: Event[];
-  isCurrent?: boolean; // Highlight current day on mobile header
+  isCurrent?: boolean;
 }
 
 export const DayColumn = ({ date, events, isCurrent }: DayColumnProps) => {
@@ -19,12 +18,11 @@ export const DayColumn = ({ date, events, isCurrent }: DayColumnProps) => {
     id: date,
   });
 
-  // Sort events by time
   const sortedEvents = [...events].sort(
     (a, b) => parseTime(a.time) - parseTime(b.time)
   );
 
-  const dateObj = new Date(date + "T00:00:00"); // Ensure correct parsing
+  const dateObj = new Date(date + "T00:00:00");
 
   return (
     <div
